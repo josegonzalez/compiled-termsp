@@ -1,3 +1,15 @@
+FROM golang:1.20.5-buster AS sdlfoxbuilder
+
+RUN apt update && apt install -y make build-essential libsdl2-dev libfontconfig-dev libfreetype6-dev
+WORKDIR /app
+RUN git clone https://github.com/palomena/SDL_fox
+WORKDIR /app/SDL_fox
+COPY arm.mk make/default.mk
+RUN make
+RUN make install
+RUN apt install -y file
+RUN file /app/SDL_fox/build/libsdlfox.so
+
 FROM golang:1.20.5-buster
 
 ENV GOOS=linux
@@ -14,7 +26,11 @@ ENV TERMSP_VERSION=$TERMSP_VERSION
 RUN git clone https://github.com/Nevrdid/TermSP /go/src/github.com/Nevrdid/TermSP && \
     git -C /go/src/github.com/Nevrdid/TermSP checkout "$TERMSP_VERSION"
 
+# RUN apt install -y libunicode
+
 WORKDIR /go/src/github.com/Nevrdid/TermSP
+COPY --from=sdlfoxbuilder /app/SDL_fox/build/libsdlfox.so /go/src/github.com/Nevrdid/TermSP/libs/libsdlfox.so
+RUN cd libvterm-0.3.3 && make
 RUN mkdir -p build && make all
 
 RUN apt-get update && apt-get install -y file

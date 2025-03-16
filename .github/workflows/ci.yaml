@@ -23,7 +23,8 @@ jobs:
       fail-fast: false
       matrix:
         architecture:
-          - arm
+          # need to debug libvterm-0.3.3
+          # - arm
           - arm64
 
     steps:
