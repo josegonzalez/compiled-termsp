@@ -1,10 +1,10 @@
 FROM golang:1.20.5-buster
 
 ENV GOOS=linux
-ENV GOARCH=arm64
+ENV GOARCH=arm
 ENV CGO_ENABLED=1
-ENV CROSS_COMPILE=aarch64-linux-gnu-
-ENV CC=aarch64-linux-gnu-gcc
+ENV CROSS_COMPILE=arm-linux-gnueabihf-
+ENV CC=arm-linux-gnueabihf-gcc
 
 RUN apt update && apt install -y libsdl2-dev libsdl2-ttf-dev libsdl2-image-dev libtool-bin libfontconfig patch
 
@@ -15,8 +15,6 @@ RUN git clone https://github.com/Nevrdid/TermSP /go/src/github.com/Nevrdid/TermS
     git -C /go/src/github.com/Nevrdid/TermSP checkout "$TERMSP_VERSION"
 
 WORKDIR /go/src/github.com/Nevrdid/TermSP
-# ADD patches/Term.c.patch .
-# RUN patch src/TERM.c Term.c.patch
 RUN mkdir -p build && make all
 
 RUN apt-get update && apt-get install -y file
