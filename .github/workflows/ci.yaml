@@ -1,0 +1,72 @@
+---
+name: "ci"
+
+# yamllint disable-line rule:truthy
+on:
+  pull_request:
+    branches:
+      - "*"
+  push:
+    branches:
+      - main
+
+permissions:
+  attestations: write
+  id-token: write
+  contents: write
+
+jobs:
+  ci:
+    name: ci
+    runs-on: ubuntu-24.04-arm
+    strategy:
+      fail-fast: false
+      matrix:
+        architecture:
+          - arm
+          - arm64
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup QEMU
+        uses: docker/setup-qemu-action@v3
+
+      - name: Set up Docker Buildx
+        id: buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build termsp
+        run: |
+          make bin/${{ matrix.architecture }}/termsp
+          mv bin/${{ matrix.architecture }}/termsp termsp-${{ matrix.architecture }}
+
+      - name: Attest Build Provenance
+        uses: actions/attest-build-provenance@v2.2.3
+        with:
+          subject-path: "termsp-${{ matrix.architecture }}"
+
+      - name: Upload Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: termsp-${{ matrix.architecture }}
+          path: termsp-${{ matrix.architecture }}
+
+  release:
+    name: release
+    runs-on: ubuntu-24.04-arm
+    needs: ci
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Download Artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: dist
+          pattern: termsp-*
+          merge-multiple: true
+
+      - name: List Artifacts
+        run: ls -l dist
