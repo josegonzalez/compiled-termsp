@@ -14,10 +14,10 @@ bin/arm/termsp:
 	docker container rm extract
 	chmod +x bin/arm/termsp
 
-bin/amd64/termsp:
-	mkdir -p bin/amd64
-	docker buildx build --platform linux/amd64 --load -f amd64/Dockerfile --build-arg TERMSP_VERSION=$(TERMSP_VERSION) --progress plain -t app/termsp:$(TERMSP_VERSION)-amd64 amd64
-	docker container create --name extract app/termsp:$(TERMSP_VERSION)-amd64
-	docker container cp extract:/go/src/github.com/Nevrdid/TermSP/build/TermSP bin/amd64/termsp
+bin/arm64/termsp:
+	mkdir -p bin/arm64
+	docker buildx build --platform linux/arm64 --load -f arm64/Dockerfile --build-arg TERMSP_VERSION=$(TERMSP_VERSION) --progress plain -t app/termsp:$(TERMSP_VERSION)-arm64 arm64
+	docker container create --name extract app/termsp:$(TERMSP_VERSION)-arm64
+	docker container cp extract:/go/src/github.com/Nevrdid/TermSP/build/TermSP bin/arm64/termsp
 	docker container rm extract
-	chmod +x bin/amd64/termsp
+	chmod +x bin/arm64/termsp
