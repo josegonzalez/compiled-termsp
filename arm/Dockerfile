@@ -1,4 +1,5 @@
 FROM golang:1.20.5-buster AS sdlfoxbuilder
+RUN sed -i 's#deb.debian#archive.debian#' /etc/apt/sources.list
 
 RUN apt update && apt install -y make build-essential libsdl2-dev libfontconfig-dev libfreetype6-dev
 WORKDIR /app
@@ -11,6 +12,7 @@ RUN apt install -y file
 RUN file /app/SDL_fox/build/libsdlfox.so
 
 FROM golang:1.20.5-buster
+RUN sed -i 's#deb.debian#archive.debian#' /etc/apt/sources.list
 
 ENV GOOS=linux
 ENV GOARCH=arm
