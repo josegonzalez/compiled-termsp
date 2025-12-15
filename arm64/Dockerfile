@@ -1,4 +1,5 @@
 FROM golang:1.20.5-buster
+RUN sed -i 's#deb.debian#archive.debian#' /etc/apt/sources.list
 
 ENV GOOS=linux
 ENV GOARCH=arm64
