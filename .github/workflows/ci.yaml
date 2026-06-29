@@ -44,7 +44,7 @@ jobs:
           mv bin/${{ matrix.architecture }}/termsp termsp-${{ matrix.architecture }}
 
       - name: Attest Build Provenance
-        uses: actions/attest-build-provenance@v4.1.0
+        uses: actions/attest-build-provenance@v4.1.1
         with:
           subject-path: "termsp-${{ matrix.architecture }}"
 
